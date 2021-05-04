@@ -19,7 +19,7 @@ class LoginController extends BaseController
             'actions' => [
                 'index' => ['POST']
             ]
-        ]
+            ];
         return $behaviors;
        
     }

@@ -12,7 +12,7 @@ use app\models\authorization\User;
 
 use yii\rest\UrlRule;
 use yii\web\JsonParser;
-use yii\web\JsonResponseFormatter;
+
 use yii\web\Request;
 use yii\web\Response;
 
@@ -41,6 +41,7 @@ $config = [
                 'application/json'  => 1
             ]
         ],
+
         'cache' => [
             'class' => 'yii\caching\FileCache',
         ],
@@ -57,7 +58,7 @@ $config = [
             'format' => Response::FORMAT_JSON,
             'formatters' => [
                 Response::FORMAT_JSON => [
-                    'class' => JsonResposeFormatter::class,
+                    'class' => 'yii\web\JsonResponseFormatter',
                 ]
             ]
                 ],
@@ -78,20 +79,23 @@ $config = [
             ],
         ],
         'db' => $db,
-        
+        // 'urlManager' => [
+        //     'enablePrettyUrl' => true,
+        //     'enableStrictParsing' => true,
+        //     'showScriptName' => false,
+        //     'rules' => [
+        //         ['class' => 'yii\rest\UrlRule', 'controller' => 'user'],
+        //     ],
+        // ],
         'urlManager' => [
             'enablePrettyUrl' => true,
             'showScriptName' => false,
             'rules' => [
-                [
-                    'class' => UrlRule::class,
-                    'controller' => 'alatech/api/login'
-                ],
-                [
-                    'class' => UrlRule::class,
-                    'controller' => 'alatech/api/logout'
-                ],
+                ['class' => 'yii\rest\UrlRule', 'controller' => 'user'],
+                ['class' => 'yii\rest\UrlRule', 'controller' => 'login'],
+                ['class' => 'yii\rest\UrlRule', 'controller' => 'logout'],
             ],
+
         ],
         
     ],

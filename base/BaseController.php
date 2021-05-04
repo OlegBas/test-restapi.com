@@ -15,7 +15,7 @@ class BaseController  extends Controller{
 
 
     public function checkAccess ( $action, $model = null, $params = [] ){
-
+        return true;
     }
 
 

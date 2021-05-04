@@ -17,13 +17,13 @@ class LogoutController extends BaseController
         $behaviors = parent::behaviors();
         $behaviors['authorization'] =[
             'class' => HttpBearerAuth::class,
-        ]
+        ];
         $behaviors['verbs'] = [
             'class' => VerbFilter::class,
             'actions' => [
                 'index' => ['POST']
             ]
-        ]
+            ];
         return $behaviors;
        
     }
