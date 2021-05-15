@@ -4,8 +4,8 @@ namespace app\controllers\alatech\api;
 
 use Yii;
 use app\base\BaseController;
-use app\base\authorization\Login;
-use app\base\authorization\User;
+use app\models\authorization\LogoutForm;
+use app\models\authorization\User;
 use yii\filters\auth\HttpBearerAuth;
 use yii\filters\VerbFilter;
 
@@ -21,7 +21,7 @@ class LogoutController extends BaseController
         $behaviors['verbs'] = [
             'class' => VerbFilter::class,
             'actions' => [
-                'index' => ['POST']
+                'index' => ['DELETE']
             ]
             ];
         return $behaviors;
@@ -30,45 +30,30 @@ class LogoutController extends BaseController
 
    
 
-    /**
-     * Displays homepage.
-     *
-     * @return string
-     */
     public function actionIndex()
     {
-        $model = new Login();
-        // 2 param - $formName	string	The form name to use to load the data into the model. If not set, formName() is used.
-        if($model->load(Yii::$app->request->post(), '') && $model->validate())
+        $model = new LogoutForm();
+        if(!Yii::$app->user->isGuest)
         {
-            //Получаем 1 объект по имени пользователя
-            $user = User::findOne(['username' => $model->username]);
-            if($user != null) {
-                //Если пользователь уже авторизован
-                if(strlen($user->accessToken) > 0) {
-                    Yii::$app->response->statusCode = 403;
-                    $model->addError('*', 'Already logged in');
-                    return $model->errors;
-                }//Если пароль выбранного пользователя в БД = паролю из формы, авторизуем пользователя
-                else if($user->password == $model->password) {
-                    $user->refreshAccessToken();
-                    $user->save();
-                    Yii::$app->user->login($user); //авторизация пользователя
-                    return [
-                        'token' => $user->accessToken,
-                    ];
-                }
-            }
-            //Установка кода ошибки
-            Yii::$app->response->statusCode = 400;
-            //Добавление ошибки в массив ошибок
-            //TODO warning 
-            $model->addError('*', 'Invalid credentials');
-            //Возврат массива объектов
-            return $model->errors;
+            print_r(Yii::$app->user->identity->username);
+            $model->token = Yii::$app->user->getIdentity()->accessToken;
+            // User::findIdentityByAccessToken(Yii::$app->request);
+            // if($model->token) {
+            //     $user = User::findIdentity(Yii::$app->user->getId());
+            //     if($user != null) {
+            //         if (strlen($user->accessToken) > 0) {
+            //             $user->accessToken = '';
+            //             $user->save();
+            //             return [
+            //                 'message' => 'Logout successful'
+            //             ];
+            //         } else 
+            //             return $this->userFunc($model,404,['field' => 'token','val' => 'Not logged in'],true);
+                    
+            //     }
+            // }
+            // return $this->userFunc($model,404,['field' => 'token','val' => 'Invalid token'],true);
         }
-        Yii::$app->response->statusCode = 400;
-        return $model->errors;
     }
 
     

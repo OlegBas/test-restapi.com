@@ -1,74 +1,45 @@
 <?php
 
-namespace app\models;
+namespace app\models\authorization;
 
-class User extends \yii\base\BaseObject implements \yii\web\IdentityInterface
+use yii\db\ActiveRecord;
+use yii\web\IdentityInterface;
+
+/**
+ * Class User
+ * @package app\models\authorization
+ * @property Number $id
+ * @property String $username
+ * @property String $password
+ * @property String $accessToken
+ */
+class User extends ActiveRecord implements IdentityInterface
 {
-    public $id;
+
     public $username;
-    public $password;
-    public $authKey;
-    public $accessToken;
-
-    private static $users = [
-        '100' => [
-            'id' => '100',
-            'username' => 'admin',
-            'password' => 'admin',
-            'authKey' => 'test100key',
-            'accessToken' => '100-token',
-        ],
-        '101' => [
-            'id' => '101',
-            'username' => 'demo',
-            'password' => 'demo',
-            'authKey' => 'test101key',
-            'accessToken' => '101-token',
-        ],
-    ];
-
-
     /**
-     * {@inheritdoc}
+     * @inheritDoc
      */
     public static function findIdentity($id)
     {
-        return isset(self::$users[$id]) ? new static(self::$users[$id]) : null;
+        return User::findOne(['id' => $id]);
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritDoc
      */
     public static function findIdentityByAccessToken($token, $type = null)
     {
-        foreach (self::$users as $user) {
-            if ($user['accessToken'] === $token) {
-                return new static($user);
-            }
+        $user = User::findOne(['accessToken' => $token]);
+        if($user != null)
+        {
+            return $user;
         }
-
-        return null;
+        return new User();
     }
 
     /**
-     * Finds user by username
-     *
-     * @param string $username
-     * @return static|null
-     */
-    public static function findByUsername($username)
-    {
-        foreach (self::$users as $user) {
-            if (strcasecmp($user['username'], $username) === 0) {
-                return new static($user);
-            }
-        }
-
-        return null;
-    }
-
-    /**
-     * {@inheritdoc}
+     * @inheritDoc
      */
     public function getId()
     {
@@ -76,29 +47,23 @@ class User extends \yii\base\BaseObject implements \yii\web\IdentityInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritDoc
      */
     public function getAuthKey()
     {
-        return $this->authKey;
+        return $this->accessToken;
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritDoc
      */
     public function validateAuthKey($authKey)
     {
-        return $this->authKey === $authKey;
+        return $this->accessToken == $authKey;
     }
 
-    /**
-     * Validates password
-     *
-     * @param string $password password to validate
-     * @return bool if password provided is valid for current user
-     */
-    public function validatePassword($password)
+    public function refreshAccessToken()
     {
-        return $this->password === $password;
+        $this->accessToken = md5(date('c'));
     }
 }

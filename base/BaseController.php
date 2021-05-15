@@ -25,4 +25,10 @@ class BaseController  extends Controller{
         $this->checkAccess($this->action->id);
         return $value; 
     }
+
+    protected function userFunc($model,$statusCode,$errorInfo,$isReturn){
+        Yii::$app->response->statusCode = $statusCode;
+        if($errorInfo) $model->addError($errorInfo['field'], $errorInfo['val']);
+        if($isReturn) return $model->errors;
+    }
 }

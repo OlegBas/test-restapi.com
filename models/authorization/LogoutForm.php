@@ -11,7 +11,7 @@ use yii\base\Model;
  * @property-read User|null $user This property is read-only.
  *
  */
-class Logout extends Model
+class LogoutForm extends Model
 {
    
     public $token;
@@ -24,7 +24,7 @@ class Logout extends Model
     {
         return [
             // username and password are both required
-            ['token', 'required'],
+            // ['token', 'required'],
         ];
     }
 

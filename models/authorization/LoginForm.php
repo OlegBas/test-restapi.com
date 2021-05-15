@@ -11,7 +11,7 @@ use yii\base\Model;
  * @property-read User|null $user This property is read-only.
  *
  */
-class Login extends Model
+class LoginForm extends Model
 {
     public $username;
     public $password;
@@ -26,6 +26,7 @@ class Login extends Model
         return [
             // username and password are both required
             [['username', 'password'], 'required'],
+            [['username', 'password'], 'safe'],
         ];
     }
 
